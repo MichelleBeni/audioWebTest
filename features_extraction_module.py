@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 def extract_extra_features(file_path):
     y, sr = librosa.load(file_path)
     pitches, magnitudes = librosa.piptrack(y=y, sr=sr)
-    pitch_values = pitches[magnitudes > 0.1]
+    pitch_values = librosa.yin(y, fmin=50, fmax=500, sr=sr)
     pitch_var = pitch_values.std()
     pitch_diff = abs(pitch_values[1:] - pitch_values[:-1])
     pitch_rate = pitch_diff.mean()
