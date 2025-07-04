@@ -26,7 +26,12 @@ def analyze():
         return 'Only .wav files are supported.', 400
 
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+
+    # ✅ תוודאי שהתיקייה uploads קיימת
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
     file.save(filepath)
+
 
     pitch_var, pitch_rate = extract_extra_features(filepath)
 
