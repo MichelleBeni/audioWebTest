@@ -37,6 +37,8 @@ def analyze():
 
     exp_fig = generate_expressiveness_plot(pitch_var, reference_df)
     clr_fig = generate_clarity_plot(pitch_rate, reference_df)
+    
+    os.makedirs(PLOTS_FOLDER, exist_ok=True)
 
     exp_name = f"expressiveness_plot.png"
     clr_name = f"clarity_plot.png"
