@@ -38,8 +38,8 @@ def analyze():
     fluency_wpm, num_words, duration_sec = extract_fluency(filepath)
 
     # Dummy plot file names expected to exist in static/plots
-    expressiveness_plot = 'plots/expressiveness_plot.png'
-    clarity_plot = 'plots/clarity_plot.png'
+    expressiveness_plot = 'static/plots/expressiveness_plot.png'
+    clarity_plot = 'static/plots/clarity_plot.png'
 
     return render_template('index.html',
         pitch_var=round(pitch_var, 3),
