@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,7 +39,7 @@
     <h1>Upload a Storytelling Recording</h1>
     <div class="container">
         <form action="/analyze" method="post" enctype="multipart/form-data" class="upload-box">
-            <input type="file" name="file" accept=".wav"><br>
+            <input type="file" name="file" accept=".wav,.mp3,.mp4"><br>
             <button type="submit">Analyze</button>
         </form>
 
@@ -46,9 +47,11 @@
         <div>
             <p><strong>Pitch Variability:</strong> {{ pitch_var }}</p>
             <p><strong>Pitch Change Rate:</strong> {{ pitch_rate }}</p>
+            <p><strong>Fluency:</strong> {{ fluency }} words per minute</p>
+            <p><strong>Total Words:</strong> {{ num_words }} | <strong>Duration:</strong> {{ duration }} sec</p>
             <h3>Scatter Plots:</h3>
-            <img src="{{ url_for('plot_file', filename=expressiveness_plot) }}" alt="Expressiveness Plot">
-            <img src="{{ url_for('plot_file', filename=clarity_plot) }}" alt="Clarity Plot">
+            <img src="{{ url_for('static', filename=expressiveness_plot) }}" alt="Expressiveness Plot">
+            <img src="{{ url_for('static', filename=clarity_plot) }}" alt="Clarity Plot">
         </div>
         {% endif %}
     </div>
