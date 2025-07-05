@@ -1,12 +1,13 @@
-
 from flask import Flask, render_template, request
 import os
+import librosa
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import whisper
 import subprocess
 from werkzeug.utils import secure_filename
-import pandas as pd
-import matplotlib.pyplot as plt
 from features_extraction_module import extract_features_for_boxplot
-
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -16,26 +17,15 @@ os.makedirs(PLOTS_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 df = pd.read_csv('reference_dataset.csv')
 
-def create_box_plot(df_column, new_value, ylabel, filename):
-    plt.figure()
-    plt.boxplot(df_column, vert=False)
-    plt.axvline(new_value, color='red', linestyle='--', label='Your Recording')
-    plt.xlabel(ylabel)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(f'static/plots/{filename}')
-    plt.close()
-
-
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    # Ensure upload folder exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    os.makedirs('static/plots', exist_ok=True)
+    os.makedirs(PLOTS_FOLDER, exist_ok=True)
+
     if 'file' not in request.files:
         return 'No file part', 400
     file = request.files['file']
@@ -53,11 +43,7 @@ def analyze():
         subprocess.run(['ffmpeg', '-y', '-i', filepath, new_path])
         filepath = new_path
 
-    pitch_var, pitch_rate, fluency_wpm, num_words, duration_sec = extract_features_for_boxplot(filepath)
-    create_box_plot(df['pitch_variability'], pitch_var, 'Pitch Variability', 'pitch_var_plot.png')
-    create_box_plot(df['pitch_change_rate'], pitch_rate, 'Pitch Change Rate', 'pitch_rate_plot.png')
-    create_box_plot(df['fluency'], fluency_wpm, 'Fluency (WPM)', 'fluency_plot.png')
-
+    pitch_var, pitch_rate, fluency_wpm, num_words, duration_sec = extract_features_for_boxplot(filepath, df)
 
     return render_template('index.html',
         pitch_var=round(pitch_var, 3),
@@ -65,10 +51,8 @@ def analyze():
         fluency=round(fluency_wpm, 2),
         num_words=num_words,
         duration=round(duration_sec, 2),
-        pitch_var_plot='plots/pitch_var_plot.png',
-        pitch_rate_plot='plots/pitch_rate_plot.png',
-        fluency_plot='plots/fluency_plot.png'
-
+        expressiveness_plot='plots/expressiveness_plot.png',
+        clarity_plot='plots/clarity_plot.png'
     )
 
 if __name__ == '__main__':
