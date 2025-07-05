@@ -24,7 +24,10 @@ def extract_features_for_boxplot(audio_path, df):
     # Whisper transcription
     model = whisper.load_model("base")
     result = model.transcribe(audio_path, language="he", word_timestamps=True)
-    words = [seg['word'] for seg in result['segments']]
+    words = []
+    for segment in result['segments']:
+        if 'words' in segment:
+            words.extend([w['word'] for w in segment['words']])
     num_words = len(words)
     duration_sec = librosa.get_duration(y=y, sr=sr)
     fluency_wpm = (num_words / duration_sec) * 60
