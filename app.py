@@ -5,7 +5,8 @@ import subprocess
 from werkzeug.utils import secure_filename
 import pandas as pd
 import matplotlib.pyplot as plt
-from features_extraction_module import extract_extra_features, extract_fluency
+from features_extraction_module import extract_features_for_boxplot
+
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -52,9 +53,7 @@ def analyze():
         subprocess.run(['ffmpeg', '-y', '-i', filepath, new_path])
         filepath = new_path
 
-    pitch_var, pitch_rate = extract_extra_features(filepath)
-    fluency_wpm, num_words, duration_sec = extract_fluency(filepath)
-
+    pitch_var, pitch_rate, fluency_wpm, num_words, duration_sec = extract_features_for_boxplot(filepath)
     create_box_plot(df['pitch_variability'], pitch_var, 'Pitch Variability', 'pitch_var_plot.png')
     create_box_plot(df['pitch_change_rate'], pitch_rate, 'Pitch Change Rate', 'pitch_rate_plot.png')
     create_box_plot(df['fluency'], fluency_wpm, 'Fluency (WPM)', 'fluency_plot.png')
