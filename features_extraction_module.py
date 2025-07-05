@@ -3,14 +3,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def extract_extra_features(file_path):
-    y, sr = librosa.load(file_path)
-    pitches, magnitudes = librosa.piptrack(y=y, sr=sr)
-    pitch_values = librosa.yin(y, fmin=50, fmax=500, sr=sr)
+def extract_extra_features(filepath):
+    y, sr = librosa.load(filepath)
+    pitch_values = librosa.pyin(y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))[0]
+    pitch_values = pitch_values[~np.isnan(pitch_values)]  # חשוב! מסנן ערכים חסרים
+
     pitch_var = np.std(pitch_values)
-    pitch_diff = abs(pitch_values[1:] - pitch_values[:-1])
-    pitch_rate = pitch_diff.mean()
+
+    pitch_diff = np.abs(np.diff(pitch_values))
+    pitch_rate = np.mean(pitch_diff)
+
     return pitch_var, pitch_rate
+
 
 def generate_expressiveness_plot(pitch_var, reference_df):
     fig, ax = plt.subplots()
