@@ -21,7 +21,10 @@ def extract_extra_features(audio_path):
 
     pitch_var = np.std(pitch_values)
     pitch_diff = np.abs(np.diff(pitch_values))
-    pitch_rate = np.mean(pitch_diff)
+
+    # סינון שינויים לא סבירים – נניח מעל 100 הרץ בין פריימים סמוכים
+    pitch_diff = pitch_diff[pitch_diff < 100]
+    pitch_rate = np.mean(pitch_diff) if len(pitch_diff) > 0 else 0
     return pitch_var, pitch_rate
 
 def extract_fluency(audio_path):
