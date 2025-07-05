@@ -53,7 +53,7 @@ def analyze():
 
     create_boxplot_with_line(df, 'pitch_variability', pitch_var, 'Pitch Variability', 'pitch_var_plot.png')
     create_boxplot_with_line(df, 'pitch_change_rate', pitch_rate, 'Pitch Change Rate', 'pitch_rate_plot.png')
-    create_boxplot_with_line(df, 'fluency', fluency_wpm, 'Fluency (WPM)', 'fluency_plot.png')
+
 
     return render_template('index.html',
         pitch_var=round(pitch_var, 3),
