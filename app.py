@@ -1,14 +1,27 @@
 
 from flask import Flask, render_template, request
 import os
-from werkzeug.utils import secure_filename
-from features_extraction_module import extract_extra_features, extract_fluency
 import subprocess
+from werkzeug.utils import secure_filename
+import pandas as pd
+import matplotlib.pyplot as plt
+from features_extraction_module import extract_extra_features, extract_fluency
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-os.makedirs('static/plots', exist_ok=True)
+
+df = pd.read_csv('reference_dataset.csv')
+
+def create_scatter_plot(x_ref, y_ref, new_x, xlabel, ylabel, filename):
+    plt.figure()
+    plt.scatter(x_ref, y_ref, alpha=0.4, label='Dataset')
+    plt.axvline(x=new_x, color='red', linestyle='--', label='Your Recording')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(f'{ylabel} vs {xlabel}')
+    plt.legend()
+    plt.savefig(f'static/plots/{filename}')
+    plt.close()
 
 @app.route('/')
 def index():
@@ -28,7 +41,6 @@ def analyze():
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
 
-    # Convert to wav if necessary
     if not filepath.endswith('.wav'):
         new_path = filepath.rsplit('.', 1)[0] + '.wav'
         subprocess.run(['ffmpeg', '-y', '-i', filepath, new_path])
@@ -37,9 +49,8 @@ def analyze():
     pitch_var, pitch_rate = extract_extra_features(filepath)
     fluency_wpm, num_words, duration_sec = extract_fluency(filepath)
 
-    # Dummy plot file names expected to exist in static/plots
-    expressiveness_plot = 'static/plots/expressiveness_plot.png'
-    clarity_plot = 'static/plots/clarity_plot.png'
+    create_scatter_plot(df['pitch_variability'], df['Expressiveness'], pitch_var, 'Pitch Variability', 'Expressiveness', 'expressiveness_plot.png')
+    create_scatter_plot(df['pitch_change_rate'], df['Clarity'], pitch_rate, 'Pitch Change Rate', 'Clarity', 'clarity_plot.png')
 
     return render_template('index.html',
         pitch_var=round(pitch_var, 3),
@@ -47,8 +58,8 @@ def analyze():
         fluency=round(fluency_wpm, 2),
         num_words=num_words,
         duration=round(duration_sec, 2),
-        expressiveness_plot=expressiveness_plot,
-        clarity_plot=clarity_plot
+        expressiveness_plot='plots/expressiveness_plot.png',
+        clarity_plot='plots/clarity_plot.png'
     )
 
 if __name__ == '__main__':
