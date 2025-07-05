@@ -8,7 +8,16 @@ model = whisper.load_model("base")
 def extract_extra_features(audio_path):
     y, sr = librosa.load(audio_path)
     pitches, magnitudes = librosa.piptrack(y=y, sr=sr)
-    pitch_values = pitches[magnitudes > np.median(magnitudes)]
+    pitch_values = []
+
+    for t in range(pitches.shape[1]):
+        index = magnitudes[:, t].argmax()
+        pitch = pitches[index, t]
+        if pitch > 0:
+            pitch_values.append(pitch)
+
+    pitch_values = np.array(pitch_values)
+
     pitch_var = np.std(pitch_values)
     pitch_diff = np.abs(np.diff(pitch_values))
     pitch_rate = np.mean(pitch_diff)
