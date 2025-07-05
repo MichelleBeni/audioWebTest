@@ -13,10 +13,11 @@ def extract_extra_features(audio_path):
     for t in range(pitches.shape[1]):
         index = magnitudes[:, t].argmax()
         pitch = pitches[index, t]
-        if pitch > 0:
+        if 50 < pitch < 500:  # רק תחום דיבור אנושי
             pitch_values.append(pitch)
 
     pitch_values = np.array(pitch_values)
+
 
     pitch_var = np.std(pitch_values)
     pitch_diff = np.abs(np.diff(pitch_values))
