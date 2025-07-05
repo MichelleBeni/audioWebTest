@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,12 +47,14 @@
             <p><strong>Pitch Variability:</strong> {{ pitch_var }}</p>
             <p><strong>Pitch Change Rate:</strong> {{ pitch_rate }}</p>
             <p><strong>Fluency:</strong> {{ fluency }} words per minute</p>
-            <p><strong>Total Words:</strong> {{ num_words }} | <strong>Duration:</strong> {{ duration }} sec</p>
+            <p><strong>Total Words:</strong> {{ total_words }} | <strong>Duration:</strong> {{ duration }} sec</p>
             <h3>Scatter Plots:</h3>
-            <img src="{{ url_for('static', filename=expressiveness_plot) }}" alt="Expressiveness Plot">
-            <img src="{{ url_for('static', filename=clarity_plot) }}" alt="Clarity Plot">
+            <img src="{{ url_for('static', filename='plots/pitch_var_plot.png') }}" alt="Pitch Variability Plot">
+            <img src="{{ url_for('static', filename='plots/pitch_rate_plot.png') }}" alt="Pitch Change Rate Plot">
+            <img src="{{ url_for('static', filename='plots/fluency_plot.png') }}" alt="Fluency Plot">
         </div>
         {% endif %}
     </div>
 </body>
 </html>
+
