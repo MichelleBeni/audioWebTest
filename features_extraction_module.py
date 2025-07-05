@@ -1,5 +1,7 @@
 import librosa
 import matplotlib.pyplot as plt
+import numpy as np
+
 
 def extract_extra_features(file_path):
     y, sr = librosa.load(file_path)
