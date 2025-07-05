@@ -31,7 +31,7 @@ def index():
 def analyze():
     # Ensure upload folder exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
+    os.makedirs('static/plots', exist_ok=True)
     if 'file' not in request.files:
         return 'No file part', 400
     file = request.files['file']
