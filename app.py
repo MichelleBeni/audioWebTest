@@ -8,20 +8,23 @@ import matplotlib.pyplot as plt
 from features_extraction_module import extract_extra_features, extract_fluency
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
-
+UPLOAD_FOLDER = 'uploads'
+PLOTS_FOLDER = 'static/plots'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(PLOTS_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 df = pd.read_csv('reference_dataset.csv')
 
-def create_scatter_plot(x_ref, y_ref, new_x, xlabel, ylabel, filename):
+def create_box_plot(df_column, new_value, ylabel, filename):
     plt.figure()
-    plt.scatter(x_ref, y_ref, alpha=0.4, label='Dataset')
-    plt.axvline(x=new_x, color='red', linestyle='--', label='Your Recording')
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.title(f'{ylabel} vs {xlabel}')
+    plt.boxplot(df_column, vert=False)
+    plt.axvline(new_value, color='red', linestyle='--', label='Your Recording')
+    plt.xlabel(ylabel)
     plt.legend()
+    plt.tight_layout()
     plt.savefig(f'static/plots/{filename}')
     plt.close()
+
 
 @app.route('/')
 def index():
@@ -52,8 +55,10 @@ def analyze():
     pitch_var, pitch_rate = extract_extra_features(filepath)
     fluency_wpm, num_words, duration_sec = extract_fluency(filepath)
 
-    create_scatter_plot(df['pitch_variability'], df['Expressiveness'], pitch_var, 'Pitch Variability', 'Expressiveness', 'expressiveness_plot.png')
-    create_scatter_plot(df['pitch_change_rate'], df['Clarity'], pitch_rate, 'Pitch Change Rate', 'Clarity', 'clarity_plot.png')
+    create_box_plot(df['pitch_variability'], pitch_var, 'Pitch Variability', 'pitch_var_plot.png')
+    create_box_plot(df['pitch_change_rate'], pitch_rate, 'Pitch Change Rate', 'pitch_rate_plot.png')
+    create_box_plot(df['fluency'], fluency_wpm, 'Fluency (WPM)', 'fluency_plot.png')
+
 
     return render_template('index.html',
         pitch_var=round(pitch_var, 3),
@@ -61,8 +66,10 @@ def analyze():
         fluency=round(fluency_wpm, 2),
         num_words=num_words,
         duration=round(duration_sec, 2),
-        expressiveness_plot='plots/expressiveness_plot.png',
-        clarity_plot='plots/clarity_plot.png'
+        pitch_var_plot='plots/pitch_var_plot.png',
+        pitch_rate_plot='plots/pitch_rate_plot.png',
+        fluency_plot='plots/fluency_plot.png'
+
     )
 
 if __name__ == '__main__':
