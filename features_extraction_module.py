@@ -26,5 +26,4 @@ def extract_features_for_boxplot(audio_path, df):
     duration_sec = result['segments'][-1]['end'] if result['segments'] else 1
     fluency = (num_words / duration_sec) * 60 if duration_sec > 0 else 0
 
-    df['fluency'] = (df['total_words'] / df['duration']) * 60
     return pitch_var, pitch_rate, fluency, num_words, duration_sec
