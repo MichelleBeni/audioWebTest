@@ -7,7 +7,7 @@ import pandas as pd
 import whisper
 import subprocess
 from werkzeug.utils import secure_filename
-from features_extraction_module import extract_features_for_boxplot
+from features_extraction_module import extract_features_for_boxplot, create_fit_plot
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -15,16 +15,8 @@ PLOTS_FOLDER = 'static/plots'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PLOTS_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-df = pd.read_csv('reference_dataset.csv')
 
-def create_boxplot_with_line(df, column, new_value, ylabel, filename):
-    plt.figure()
-    df.boxplot(column=column, vert=True, patch_artist=True)
-    plt.axhline(y=new_value, color='red', linestyle='--', label='Your Recording')
-    plt.ylabel(ylabel)
-    plt.legend()
-    plt.savefig(os.path.join(PLOTS_FOLDER, filename))
-    plt.close()
+df = pd.read_csv('reference_dataset.csv')
 
 @app.route('/')
 def index():
@@ -49,11 +41,11 @@ def analyze():
         subprocess.run(['ffmpeg', '-y', '-i', filepath, new_path])
         filepath = new_path
 
-    pitch_var, pitch_rate, fluency_wpm, num_words, duration_sec = extract_features_for_boxplot(filepath, df)
+    pitch_var, pitch_rate, fluency_wpm, num_words, duration_sec = extract_features_for_boxplot(filepath)
 
-    create_boxplot_with_line(df, 'pitch_variability', pitch_var, 'Pitch Variability', 'pitch_var_plot.png')
-    create_boxplot_with_line(df, 'pitch_change_rate', pitch_rate, 'Pitch Change Rate', 'pitch_rate_plot.png')
-
+    # יצירת גרפים עם קו מגמה ונקודת ההקלטה החדשה
+    create_fit_plot(df, 'pitch_variability', 'Expressiveness', pitch_var, 'Pitch Variability', 'Expressiveness', 'expressiveness_fit_plot.png')
+    create_fit_plot(df, 'pitch_change_rate', 'Clarity', pitch_rate, 'Pitch Change Rate', 'Clarity', 'clarity_fit_plot.png')
 
     return render_template('index.html',
         pitch_var=round(pitch_var, 3),
@@ -61,13 +53,11 @@ def analyze():
         fluency=round(fluency_wpm, 2),
         num_words=num_words,
         duration=round(duration_sec, 2),
-        pitch_var_plot='plots/pitch_var_plot.png',
-        pitch_rate_plot='plots/pitch_rate_plot.png',
-        fluency_plot='plots/fluency_plot.png'
+        expressiveness_plot='plots/expressiveness_fit_plot.png',
+        clarity_plot='plots/clarity_fit_plot.png'
     )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
-
 
 
