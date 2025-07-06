@@ -51,14 +51,12 @@
             <h3>Scatter Plots:</h3>
             <img src="{{ url_for('static', filename=expressiveness_plot) }}" alt="Expressiveness Plot">
             <img src="{{ url_for('static', filename=clarity_plot) }}" alt="Clarity Plot">
+            <h3>Estimated Score Curves:</h3>
+            <img src="{{ url_for('static', filename=expressiveness_curve) }}" width="400">
+            <img src="{{ url_for('static', filename=clarity_curve) }}" width="400">
         </div>
         {% endif %}
-    </div>
-    <h3>Estimated Score Curves:</h3>
-    <div style="display: flex; gap: 20px;">
-        <img src="{{ url_for('static', filename='plots/expressiveness_curve.png') }}" width="400">
-        <img src="{{ url_for('static', filename='plots/clarity_curve.png') }}" width="400">
-    </div>
+    
 
 </body>
 </html>
