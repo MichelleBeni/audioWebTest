@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from scipy.optimize import curve_fit
 import os
 
 def create_curve_plot(
@@ -15,7 +14,6 @@ def create_curve_plot(
     filename,
     save_dir="static/plots"
 ):
-    # ודא שהספרייה קיימת
     os.makedirs(save_dir, exist_ok=True)
 
     # חישוב ממוצעים
@@ -31,8 +29,9 @@ def create_curve_plot(
     x_fit = np.linspace(x.min(), x.max(), 100)
     y_fit = poly(x_fit)
 
-    # חישוב ציון משוער להקלטה
+    # חישוב ציון גם אם מחוץ לטווח, עם קליפינג ל-0–5
     predicted_y = poly(new_x)
+    predicted_y = max(0, min(5.0, predicted_y))  # גבולות 0–5.0
 
     # גרף
     plt.figure()
