@@ -54,6 +54,12 @@
         </div>
         {% endif %}
     </div>
+    <h3>Estimated Score Curves:</h3>
+    <div style="display: flex; gap: 20px;">
+        <img src="{{ url_for('static', filename='plots/expressiveness_curve.png') }}" width="400">
+        <img src="{{ url_for('static', filename='plots/clarity_curve.png') }}" width="400">
+    </div>
+
 </body>
 </html>
 
