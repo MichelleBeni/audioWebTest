@@ -63,7 +63,7 @@ def analyze():
         df=df_ref,
         x_col='pitch_variability',
         y_col='Expressiveness',
-        new_x=pitch_variability,
+        new_x=pitch_var,
         xlabel='Pitch Variability (Hz)',
         ylabel='Expressiveness Score',
         filename='expressiveness_curve.png'
@@ -74,7 +74,7 @@ def analyze():
         df=df_ref,
         x_col='pitch_change_rate',
         y_col='Clarity',
-        new_x=pitch_change_rate,
+        new_x=pitch_rate,
         xlabel='Pitch Change Rate (Hz/sec)',
         ylabel='Clarity Score',
         filename='clarity_curve.png'
