@@ -66,7 +66,7 @@ def analyze():
         new_x=pitch_var,
         xlabel='Pitch Variability (Hz)',
         ylabel='Expressiveness Score',
-        filename='expressiveness_curve.png'
+        filename='expressiveness_curve.png',
     )
 
 # גרף 2: Clarity מול Pitch Change Rate
@@ -77,7 +77,7 @@ def analyze():
         new_x=pitch_rate,
         xlabel='Pitch Change Rate (Hz/sec)',
         ylabel='Clarity Score',
-        filename='clarity_curve.png'
+        filename='clarity_curve.png',
     )
 
     return render_template('index.html',
