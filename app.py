@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 import pandas as pd
 import matplotlib.pyplot as plt
 from features_extraction_module import extract_extra_features, extract_fluency
+from curve_plot_module import create_curve_plot
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -53,6 +54,31 @@ def analyze():
 
     create_scatter_plot(df['pitch_variability'], df['Expressiveness'], pitch_var, 'Pitch Variability', 'Expressiveness', 'expressiveness_plot.png')
     create_scatter_plot(df['pitch_change_rate'], df['Clarity'], pitch_rate, 'Pitch Change Rate', 'Clarity', 'clarity_plot.png')
+
+    # טען דאטה
+    df_ref = pd.read_csv("reference_dataset.csv")
+
+# גרף 1: Expressiveness מול Pitch Variability
+    create_curve_plot(
+        df=df_ref,
+        x_col='pitch_variability',
+        y_col='Expressiveness',
+        new_x=pitch_variability,
+        xlabel='Pitch Variability (Hz)',
+        ylabel='Expressiveness Score',
+        filename='expressiveness_curve.png'
+    )
+
+# גרף 2: Clarity מול Pitch Change Rate
+    create_curve_plot(
+        df=df_ref,
+        x_col='pitch_change_rate',
+        y_col='Clarity',
+        new_x=pitch_change_rate,
+        xlabel='Pitch Change Rate (Hz/sec)',
+        ylabel='Clarity Score',
+        filename='clarity_curve.png'
+    )
 
     return render_template('index.html',
         pitch_var=round(pitch_var, 3),
