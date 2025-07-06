@@ -87,7 +87,7 @@ def analyze():
         num_words=num_words,
         duration=round(duration_sec, 2),
         expressiveness_plot='plots/expressiveness_plot.png',
-        clarity_plot='plots/clarity_plot.png'
+        clarity_plot='plots/clarity_plot.png',
         expressiveness_curve='plots/expressiveness_curve.png',
         clarity_curve='plots/clarity_curve.png',
     )
