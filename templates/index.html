@@ -48,16 +48,22 @@
             <p><strong>Pitch Change Rate:</strong> {{ pitch_rate }}</p>
             <p><strong>Fluency:</strong> {{ fluency }} words per minute</p>
             <p><strong>Total Words:</strong> {{ num_words }} | <strong>Duration:</strong> {{ duration }} sec</p>
+
             <h3>Scatter Plots:</h3>
-            <img src="{{ url_for('static', filename=expressiveness_plot) }}" alt="Expressiveness Plot">
-            <img src="{{ url_for('static', filename=clarity_plot) }}" alt="Clarity Plot">
+            <div style="display: flex; gap: 40px; justify-content: center;">
+                <img src="{{ url_for('static', filename=expressiveness_plot) }}" alt="Expressiveness Scatter Plot">
+                <img src="{{ url_for('static', filename=clarity_plot) }}" alt="Clarity Scatter Plot">
+            </div>
+
+            {% if expressiveness_curve and clarity_curve %}
             <h3>Estimated Score Curves:</h3>
-            <img src="{{ url_for('static', filename=expressiveness_curve) }}" width="400">
-            <img src="{{ url_for('static', filename=clarity_curve) }}" width="400">
+            <div style="display: flex; gap: 40px; justify-content: center;">
+                <img src="{{ url_for('static', filename=expressiveness_curve) }}" alt="Expressiveness Curve">
+                <img src="{{ url_for('static', filename=clarity_curve) }}" alt="Clarity Curve">
+            </div>
+            {% endif %}
         </div>
         {% endif %}
-    
-
+    </div>
 </body>
 </html>
-
