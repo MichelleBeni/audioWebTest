@@ -1,22 +1,26 @@
 from flask import Flask, render_template, request
 import os
-import librosa
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-import whisper
 import subprocess
 from werkzeug.utils import secure_filename
-from features_extraction_module import extract_features_for_boxplot, create_fit_plot
+import pandas as pd
+import matplotlib.pyplot as plt
+from features_extraction_module import extract_extra_features, extract_fluency
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'uploads'
-PLOTS_FOLDER = 'static/plots'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(PLOTS_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
 df = pd.read_csv('reference_dataset.csv')
+
+def create_scatter_plot(x_ref, y_ref, new_x, xlabel, ylabel, filename):
+    plt.figure()
+    plt.scatter(x_ref, y_ref, alpha=0.4, label='Dataset')
+    plt.axvline(x=new_x, color='red', linestyle='--', label='Your Recording')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(f'{ylabel} vs {xlabel}')
+    plt.legend()
+    plt.savefig(f'static/plots/{filename}')
+    plt.close()
 
 @app.route('/')
 def index():
@@ -24,6 +28,9 @@ def index():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
+    # Ensure upload folder exists
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    os.makedirs('static/plots', exist_ok=True)
     if 'file' not in request.files:
         return 'No file part', 400
     file = request.files['file']
@@ -41,11 +48,11 @@ def analyze():
         subprocess.run(['ffmpeg', '-y', '-i', filepath, new_path])
         filepath = new_path
 
-    pitch_var, pitch_rate, fluency_wpm, num_words, duration_sec = extract_features_for_boxplot(filepath)
+    pitch_var, pitch_rate = extract_extra_features(filepath)
+    fluency_wpm, num_words, duration_sec = extract_fluency(filepath)
 
-    # יצירת גרפים עם קו מגמה ונקודת ההקלטה החדשה
-    create_fit_plot(df, 'pitch_variability', 'Expressiveness', pitch_var, 'Pitch Variability', 'Expressiveness', 'expressiveness_fit_plot.png')
-    create_fit_plot(df, 'pitch_change_rate', 'Clarity', pitch_rate, 'Pitch Change Rate', 'Clarity', 'clarity_fit_plot.png')
+    create_scatter_plot(df['pitch_variability'], df['Expressiveness'], pitch_var, 'Pitch Variability', 'Expressiveness', 'expressiveness_plot.png')
+    create_scatter_plot(df['pitch_change_rate'], df['Clarity'], pitch_rate, 'Pitch Change Rate', 'Clarity', 'clarity_plot.png')
 
     return render_template('index.html',
         pitch_var=round(pitch_var, 3),
@@ -53,11 +60,13 @@ def analyze():
         fluency=round(fluency_wpm, 2),
         num_words=num_words,
         duration=round(duration_sec, 2),
-        expressiveness_plot='plots/expressiveness_fit_plot.png',
-        clarity_plot='plots/clarity_fit_plot.png'
+        expressiveness_plot='plots/expressiveness_plot.png',
+        clarity_plot='plots/clarity_plot.png'
     )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+
+
 
 
